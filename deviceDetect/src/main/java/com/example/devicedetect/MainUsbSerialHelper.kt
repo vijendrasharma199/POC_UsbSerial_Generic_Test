@@ -44,6 +44,13 @@ object MainUsbSerialHelper {
     //current command
     internal var currentCommand = ""
 
+    //Device Config
+    internal var BAUD_RATE = 115200
+    internal var REQUEST_CODE = 0x22
+    internal var STOP_BIT = 0
+    internal var PARITY_BIT = 0x00
+    internal var DATA_BIT = 0x08
+
     /**
      * BroadCast Receiver
      */
@@ -120,7 +127,7 @@ object MainUsbSerialHelper {
                 usbManager.requestPermission(device, usbPermissionIntent)
                 return
             }
-            openDevice(usbManager, device)
+            openDevice(usbManager, device, "from normal")
         } else {
             //get parent activity lifecycle and add observer
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
@@ -129,7 +136,9 @@ object MainUsbSerialHelper {
                     Log.w(TAG, "onResume of activity")
                     if (usbManager.hasPermission(device)) {
                         usbHelperListener.onDeviceConnect()
-                        openDevice(usbManager, device)
+                        openDevice(usbManager, device, "from observer")
+                        // remove observer
+                        activity.lifecycle.removeObserver(this)
                     } else {
                         usbHelperListener.onConnectionError(
                             "${ConstantHelper.ErrorCode.CONNECTION} : connection failed: permission denied"
@@ -137,6 +146,21 @@ object MainUsbSerialHelper {
                     }
                 }
             })
+
+            /*activity.lifecycle.addObserver(object : LifecycleObserver{
+                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                fun onResume(){
+                    Log.w(TAG, "onResume of activity")
+                    if (usbManager.hasPermission(device)) {
+                        usbHelperListener.onDeviceConnect()
+                        openDevice(usbManager, device, "from observer")
+                    } else {
+                        usbHelperListener.onConnectionError(
+                            "${ConstantHelper.ErrorCode.CONNECTION} : connection failed: permission denied"
+                        )
+                    }
+                }
+            })*/
         }
     }
 
@@ -145,7 +169,7 @@ object MainUsbSerialHelper {
      * @param usbManager : UsbManager for open device
      * @param device: Current Device
      */
-    private fun openDevice(usbManager: UsbManager, device: UsbDevice) {
+    private fun openDevice(usbManager: UsbManager, device: UsbDevice, str: String) {
         Log.w(TAG, "openDevice: Device Open...")
         val usbConnection = usbManager.openDevice(device)
         if (usbConnection == null) {
@@ -269,6 +293,21 @@ object MainUsbSerialHelper {
 
         //initialize registers
         initRegister()
+    }
+
+    @JvmStatic
+    fun setDeviceConfiguration(
+        baudRate: Int = 115200,
+        requestCode: Int = 0x22,
+        dataBit: Int = 0x08,
+        parityBit: Int = 0x00,
+        stopBit: Int = 0
+    ) {
+        BAUD_RATE = baudRate
+        REQUEST_CODE = requestCode
+        DATA_BIT = dataBit
+        PARITY_BIT = parityBit
+        STOP_BIT = stopBit
     }
 
     @JvmStatic

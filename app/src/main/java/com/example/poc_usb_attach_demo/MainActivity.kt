@@ -47,19 +47,10 @@ class MainActivity : AppCompatActivity(), UsbHelperListener {
         //set default partition
         binding.partitionEt.setText("100")
 
+        MainUsbSerialHelper.setDeviceConfiguration(115200, 0x20, 0x08, 0x00, 0)
+        //MainUsbSerialHelper.setDeviceConfiguration(115200, 0x22, 0x08, 0x00, 0)
+
         MainUsbSerialHelper.setDeviceCallback(this, this)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.w(TAG, "onStart")
-        //MainUsbSerialHelper.setDeviceCallback(this, this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.w(TAG, "onResume")
-        //MainUsbSerialHelper.setDeviceCallback(this, this)
     }
 
     private fun sendCommand() {
@@ -86,60 +77,6 @@ class MainActivity : AppCompatActivity(), UsbHelperListener {
             showToast("Please enter command...")
         }
     }
-
-    /*private fun useModule(message: String) {
-        arraylist.clear()
-
-        MainUsbSerialHelper.setDeviceCallback(object : UsbHelperListener {
-            override fun onDeviceConnect() {
-                Log.d(TAG, "Activity : Device Connected...")
-                runOnUiThread {
-                    binding.receivedTextTv.append("Device Connected....\n")
-                    binding.deviceStatusTv.text = "Device Connected..."
-                    binding.deviceStatusTv.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.verify_color))
-                }
-            }
-
-            override fun onDeviceVerified() {
-                Log.d(TAG, "Activity : Device Verified...")
-                binding.receivedTextTv.append("Received : Device ready for communication\n")
-                binding.deviceStatusTv.text = "Device Verified..."
-                binding.deviceStatusTv.backgroundTintList =
-                    ColorStateList.valueOf(resources.getColor(R.color.start_color))
-            }
-
-            override fun onReceivedData(data: String) {
-                Log.w(TAG, "Activity : $data")
-                arraylist.add(data)
-                if (arraylist.size % divideBy == 0) {
-                    var size = arraylist.size
-                    runOnUiThread { binding.receivedTextTv.append("Received : $data : Size of List : $size\n") }
-                }
-            }
-
-            override fun onDeviceDisconnect() {
-                Log.d(TAG, "Activity : Device Disconnected")
-                runOnUiThread {
-                    binding.receivedTextTv.append("Device disconnected or transmission stopped.....\n")
-                    binding.deviceStatusTv.text = "Device Disconnected..."
-                    binding.deviceStatusTv.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.stop_color))
-                    binding.receivedTextTv.append("Size of List : ${arraylist.size}\n")
-                }
-            }
-
-            override fun onConnectionError(errorMessage: String?) {
-                Log.e(TAG, "onConnectionError: $errorMessage")
-                runOnUiThread {
-                    binding.deviceStatusTv.text = "Device Error..."
-                    binding.deviceStatusTv.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.stop_color))
-                    binding.receivedTextTv.append("$errorMessage\n")
-                }
-            }
-        })
-    }*/
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -169,14 +106,14 @@ class MainActivity : AppCompatActivity(), UsbHelperListener {
 
     override fun onReceivedData(data: String) {
         Log.w(TAG, "Activity : $data")
-        runOnUiThread { binding.receivedTextTv.append("Received : $data\n") }
+        //runOnUiThread { binding.receivedTextTv.append("Received : $data\n") }
 
-        /*arraylist.add(data)
+        arraylist.add(data)
         if (arraylist.size % divideBy == 0) {
             var size = arraylist.size
             runOnUiThread { binding.receivedTextTv.append("Received : $data : Size of List : $size\n") }
             //runOnUiThread { binding.receivedTextTv.append("Received : $data\n") }
-        }*/
+        }
     }
 
     override fun onDeviceDisconnect() {

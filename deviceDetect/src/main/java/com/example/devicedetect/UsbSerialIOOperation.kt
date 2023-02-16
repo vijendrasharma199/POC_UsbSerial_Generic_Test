@@ -152,14 +152,20 @@ class UsbSerialIOOperation constructor(
                     }
                 }
 
-                val buf = byteArrayOf(
+
+                Log.w(
+                    TAG,
+                    "Values : ${MainUsbSerialHelper.BAUD_RATE} : ${MainUsbSerialHelper.REQUEST_CODE} : ${MainUsbSerialHelper.DATA_BIT} : ${MainUsbSerialHelper.PARITY_BIT} : ${MainUsbSerialHelper.STOP_BIT}"
+                )
+
+                /*val buf = byteArrayOf(
                     (ConstantHelper.BAUD_RATE and 0xff).toByte(),
                     (ConstantHelper.BAUD_RATE shr 8 and 0xff).toByte(),
                     (ConstantHelper.BAUD_RATE shr 16 and 0xff).toByte(),
                     (ConstantHelper.BAUD_RATE shr 24 and 0xff).toByte(),
-                    0,//Stop Bits
-                    0x00,//Parity Bits
-                    0x08//Data Bits
+                    ConstantHelper.STOP_BIT.toByte(),//Stop Bits
+                    ConstantHelper.PARITY_BIT.toByte(),//Parity Bits
+                    ConstantHelper.DATA_BIT.toByte()//Data Bits
                 )
 
                 val result: Int
@@ -184,6 +190,30 @@ class UsbSerialIOOperation constructor(
                         0
                     )
                 }
+                Log.w(
+                    TAG, "Control Transfer Result : $result"
+                )
+                */
+
+                val buf = byteArrayOf(
+                    (MainUsbSerialHelper.BAUD_RATE and 0xff).toByte(),
+                    (MainUsbSerialHelper.BAUD_RATE shr 8 and 0xff).toByte(),
+                    (MainUsbSerialHelper.BAUD_RATE shr 16 and 0xff).toByte(),
+                    (MainUsbSerialHelper.BAUD_RATE shr 24 and 0xff).toByte(),
+                    MainUsbSerialHelper.STOP_BIT.toByte(),//Stop Bits
+                    MainUsbSerialHelper.PARITY_BIT.toByte(),//Parity Bits
+                    MainUsbSerialHelper.DATA_BIT.toByte()//Data Bits
+                )
+
+                val result: Int = connection.controlTransfer(
+                    UsbConstants.USB_TYPE_CLASS or 0x01,
+                    MainUsbSerialHelper.REQUEST_CODE,//0x22 or 0x20
+                    0,
+                    mControlIndex,
+                    buf,
+                    buf.size,
+                    0
+                )
                 Log.w(
                     TAG, "Control Transfer Result : $result"
                 )
